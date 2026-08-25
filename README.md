@@ -5,8 +5,9 @@ Phase 1 build: client onboarding/KYC, loan product configuration, manual disburs
 and a core double-entry ledger — see [`spec.md`](spec.md) for the full requirements,
 [`ROADMAP.md`](ROADMAP.md) for the delivery phases, [`PROGRESS.md`](PROGRESS.md) for current
 implementation status, [`FORGOT_PASSWORD.md`](FORGOT_PASSWORD.md) for how password reset currently
-works (dev-only link delivery, no email yet), and `/Users/macbook/.claude/plans/` for the build plan
-this scaffold followed.
+works (dev-only link delivery, no email yet), [`DEPLOYMENT.md`](DEPLOYMENT.md) for deploying to
+Vercel + Fly.io + Supabase, and `/Users/macbook/.claude/plans/` for the build plan this scaffold
+followed.
 
 ## Stack
 
@@ -18,7 +19,7 @@ this scaffold followed.
 
 ## Prerequisites
 
-- Node.js 20+, pnpm 10+
+- Node.js 22+ (the Supabase client's realtime module needs Node's native WebSocket, only present from 22 on), pnpm 10+
 - Docker Desktop running
 - Supabase CLI (`brew install supabase/tap/supabase` or see supabase.com/docs/guides/cli)
 

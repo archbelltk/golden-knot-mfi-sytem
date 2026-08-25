@@ -1,0 +1,16 @@
+# macOS/Linux native artifacts (bcrypt, Prisma engines) built for the host
+# machine must never be copied into the Linux build stage — they get
+# reinstalled/regenerated correctly by the Dockerfile itself.
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+
+.git
+.env
+.env.local
+.env.*.local
+*.log
+
+supabase/.branches
+supabase/.temp
