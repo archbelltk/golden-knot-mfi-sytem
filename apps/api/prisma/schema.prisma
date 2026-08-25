@@ -1,0 +1,555 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums (values mirror @golden-knot/shared/src/enums)
+// ---------------------------------------------------------------------------
+
+enum Role {
+  ADMIN
+  BACK_OFFICE
+  LOAN_OFFICER
+  BRANCH_MANAGER
+  CREDIT_COMMITTEE
+}
+
+enum Currency {
+  ZIG
+  USD
+}
+
+enum ClientStatus {
+  PROSPECT
+  UNDER_REVIEW
+  ACTIVE
+  DORMANT
+  BLACKLISTED
+}
+
+enum RiskTier {
+  STANDARD
+  ENHANCED
+}
+
+enum AddressType {
+  RESIDENTIAL
+  POSTAL
+  BUSINESS
+}
+
+enum KycDocType {
+  NATIONAL_ID
+  PASSPORT
+  PROOF_OF_ADDRESS
+  PAYSLIP
+  BANK_STATEMENT
+  BUSINESS_REGISTRATION
+  SELFIE
+  OTHER
+}
+
+enum VerifiedStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum ScreeningType {
+  PEP
+  SANCTIONS
+}
+
+enum ScreeningResult {
+  CLEAR
+  POTENTIAL_MATCH
+  CONFIRMED_MATCH
+}
+
+enum InterestType {
+  FLAT
+  REDUCING_BALANCE
+}
+
+enum RepaymentFrequency {
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+}
+
+enum ApprovalLevel {
+  LOAN_OFFICER
+  BRANCH_MANAGER
+  CREDIT_COMMITTEE
+}
+
+enum ApprovalDecision {
+  APPROVED
+  REJECTED
+  RETURNED
+}
+
+enum LoanApplicationStatus {
+  DRAFT
+  SUBMITTED
+  PENDING_LOAN_OFFICER
+  PENDING_BRANCH_MANAGER
+  PENDING_CREDIT_COMMITTEE
+  APPROVED
+  REJECTED
+}
+
+enum LoanAccountStatus {
+  PENDING_DISBURSEMENT
+  ACTIVE
+  ARREARS
+  WRITTEN_OFF
+  CLOSED
+}
+
+enum ParBucket {
+  CURRENT
+  PAR_1
+  PAR_30
+  PAR_90
+  NPL
+}
+
+enum ScheduleLineStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+}
+
+enum TransactionType {
+  DISBURSEMENT
+  REPAYMENT
+  FEE_CHARGE
+  WRITE_OFF
+  MANUAL
+}
+
+enum Channel {
+  BANK
+  MOBILE_WALLET
+  CASH
+  VOUCHER
+  INTERNAL
+}
+
+enum GLAccountType {
+  ASSET
+  CONTRA_ASSET
+  LIABILITY
+  EQUITY
+  INCOME
+  EXPENSE
+}
+
+enum GLEntryStatus {
+  DRAFT
+  PENDING_APPROVAL
+  POSTED
+  REJECTED
+  REVERSED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  STATUS_CHANGE
+  APPROVE
+  REJECT
+  DELETE
+}
+
+enum SubmissionStatus {
+  NOT_GENERATED
+  GENERATED
+  SUBMITTED
+}
+
+enum PeriodStatus {
+  OPEN
+  CLOSED
+}
+
+// ---------------------------------------------------------------------------
+// Identity / org
+// ---------------------------------------------------------------------------
+
+model Branch {
+  id        String   @id @default(uuid())
+  name      String
+  code      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  users   User[]
+  clients Client[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  fullName     String
+  role         Role
+  branchId     String?
+  isActive     Boolean  @default(true)
+  mfaSecret    String?
+  mfaEnabled   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  branch Branch? @relation(fields: [branchId], references: [id])
+}
+
+model Group {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  clients Client[]
+}
+
+// ---------------------------------------------------------------------------
+// Client / KYC
+// ---------------------------------------------------------------------------
+
+model Client {
+  id             String       @id @default(uuid())
+  clientNumber   String       @unique
+  /// AES-256-GCM ciphertext (base64) — see CryptoService. Never queried directly.
+  nationalId     String
+  /// HMAC-SHA256 of the plaintext national ID — deterministic, so uniqueness and
+  /// exact-match lookups work without ever storing or querying plaintext.
+  nationalIdHash String       @unique
+  firstName      String
+  lastName       String
+  dateOfBirth    DateTime
+  phone          String
+  email          String?
+  employmentInfo Json?
+  status         ClientStatus @default(PROSPECT)
+  riskTier       RiskTier?
+  branchId       String
+  groupId        String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  branch            Branch             @relation(fields: [branchId], references: [id])
+  group             Group?             @relation(fields: [groupId], references: [id])
+  addresses         ClientAddress[]
+  nextOfKin         NextOfKin[]
+  kycDocuments      KycDocument[]
+  complianceRecords ComplianceRecord[]
+  loanApplications  LoanApplication[]
+  loanAccounts      LoanAccount[]
+
+  @@index([branchId])
+  @@index([status])
+}
+
+model ClientAddress {
+  id       String      @id @default(uuid())
+  clientId String
+  type     AddressType
+  line1    String
+  city     String
+  province String
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+}
+
+model NextOfKin {
+  id           String @id @default(uuid())
+  clientId     String
+  fullName     String
+  relationship String
+  phone        String
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+}
+
+model KycDocument {
+  id             String         @id @default(uuid())
+  clientId       String
+  docType        KycDocType
+  storageKey     String
+  uploadedBy     String
+  uploadedAt     DateTime       @default(now())
+  verifiedStatus VerifiedStatus @default(PENDING)
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+}
+
+model ComplianceRecord {
+  id            String          @id @default(uuid())
+  clientId      String
+  screeningType ScreeningType
+  result        ScreeningResult
+  reviewedBy    String
+  reviewedAt    DateTime        @default(now())
+  notes         String?
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+}
+
+// ---------------------------------------------------------------------------
+// Loan configuration
+// ---------------------------------------------------------------------------
+
+model LoanProduct {
+  id                 String             @id @default(uuid())
+  name               String
+  code               String             @unique
+  currency           Currency
+  interestType       InterestType
+  interestRate       Decimal            @db.Decimal(9, 6)
+  feeSchedule        Json
+  minTenorMonths     Int
+  maxTenorMonths     Int
+  repaymentFrequency RepaymentFrequency
+  gracePeriodDays    Int                @default(0)
+  isActive           Boolean            @default(true)
+  createdAt          DateTime           @default(now())
+
+  applications LoanApplication[]
+  accounts     LoanAccount[]
+}
+
+model ApprovalThreshold {
+  id            String        @id @default(uuid())
+  productId     String?
+  currency      Currency?
+  minAmount     Decimal       @db.Decimal(18, 2)
+  maxAmount     Decimal?      @db.Decimal(18, 2)
+  requiredLevel ApprovalLevel
+}
+
+// ---------------------------------------------------------------------------
+// Application -> Account
+// ---------------------------------------------------------------------------
+
+model LoanApplication {
+  id                       String                @id @default(uuid())
+  clientId                 String
+  productId                String
+  requestedPrincipal       Decimal               @db.Decimal(18, 2)
+  requestedTenorMonths     Int
+  status                   LoanApplicationStatus @default(DRAFT)
+  requiredLevel            ApprovalLevel         @default(LOAN_OFFICER)
+  currentLevel             ApprovalLevel?
+  disclosureAcknowledgedAt DateTime?
+  disclosureAcknowledgedBy String?
+  createdAt                DateTime              @default(now())
+  updatedAt                DateTime              @updatedAt
+
+  client      Client         @relation(fields: [clientId], references: [id])
+  product     LoanProduct    @relation(fields: [productId], references: [id])
+  approvals   LoanApproval[]
+  loanAccount LoanAccount?
+
+  @@index([clientId])
+  @@index([status])
+}
+
+model LoanApproval {
+  id                String           @id @default(uuid())
+  loanApplicationId String
+  level             ApprovalLevel
+  approverId        String
+  decision          ApprovalDecision
+  comment           String?
+  decidedAt         DateTime         @default(now())
+
+  loanApplication LoanApplication @relation(fields: [loanApplicationId], references: [id], onDelete: Cascade)
+
+  @@index([loanApplicationId])
+}
+
+model LoanAccount {
+  id                 String             @id @default(uuid())
+  loanApplicationId  String?            @unique
+  clientId           String
+  productId          String
+  principal          Decimal            @db.Decimal(18, 2)
+  currency           Currency
+  interestRate       Decimal            @db.Decimal(9, 6)
+  interestType       InterestType
+  tenorMonths        Int
+  repaymentFrequency RepaymentFrequency
+  gracePeriodDays    Int
+  disbursementDate   DateTime?
+  maturityDate       DateTime?
+  status             LoanAccountStatus  @default(PENDING_DISBURSEMENT)
+  parBucket          ParBucket          @default(CURRENT)
+  daysInArrears      Int                @default(0)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  loanApplication LoanApplication?        @relation(fields: [loanApplicationId], references: [id])
+  client          Client                  @relation(fields: [clientId], references: [id])
+  product         LoanProduct             @relation(fields: [productId], references: [id])
+  scheduleLines   RepaymentScheduleLine[]
+  transactions    Transaction[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([parBucket])
+}
+
+model RepaymentScheduleLine {
+  id                String             @id @default(uuid())
+  loanAccountId     String
+  installmentNumber Int
+  dueDate           DateTime
+  principalDue      Decimal            @db.Decimal(18, 2)
+  interestDue       Decimal            @db.Decimal(18, 2)
+  feesDue           Decimal            @db.Decimal(18, 2)
+  principalPaid     Decimal            @default(0) @db.Decimal(18, 2)
+  interestPaid      Decimal            @default(0) @db.Decimal(18, 2)
+  feesPaid          Decimal            @default(0) @db.Decimal(18, 2)
+  status            ScheduleLineStatus @default(PENDING)
+
+  loanAccount LoanAccount @relation(fields: [loanAccountId], references: [id], onDelete: Cascade)
+
+  @@index([loanAccountId])
+  @@index([dueDate])
+}
+
+// ---------------------------------------------------------------------------
+// Transactions & ledger
+// ---------------------------------------------------------------------------
+
+model Transaction {
+  id            String          @id @default(uuid())
+  loanAccountId String?
+  type          TransactionType
+  amount        Decimal         @db.Decimal(18, 2)
+  currency      Currency
+  channel       Channel
+  reference     String?
+  recordedBy    String
+  recordedAt    DateTime        @default(now())
+
+  loanAccount LoanAccount? @relation(fields: [loanAccountId], references: [id])
+  glEntry     GLEntry?
+
+  @@index([loanAccountId])
+}
+
+model GLAccount {
+  id       String        @id @default(uuid())
+  code     String        @unique
+  name     String
+  type     GLAccountType
+  parentId String?
+  isActive Boolean       @default(true)
+
+  parent     GLAccount?    @relation("GLAccountHierarchy", fields: [parentId], references: [id])
+  children   GLAccount[]   @relation("GLAccountHierarchy")
+  entryLines GLEntryLine[]
+}
+
+model GLEntry {
+  id            String        @id @default(uuid())
+  transactionId String?       @unique
+  reference     String
+  description   String
+  period        String
+  status        GLEntryStatus @default(DRAFT)
+  makerId       String
+  checkerId     String?
+  postedAt      DateTime?
+  reversalOfId  String?
+  createdAt     DateTime      @default(now())
+
+  transaction Transaction?  @relation(fields: [transactionId], references: [id])
+  lines       GLEntryLine[]
+
+  @@index([period])
+  @@index([status])
+}
+
+model GLEntryLine {
+  id          String   @id @default(uuid())
+  glEntryId   String
+  glAccountId String
+  debit       Decimal  @default(0) @db.Decimal(18, 2)
+  credit      Decimal  @default(0) @db.Decimal(18, 2)
+  currency    Currency
+  narrative   String?
+
+  glEntry   GLEntry   @relation(fields: [glEntryId], references: [id], onDelete: Cascade)
+  glAccount GLAccount @relation(fields: [glAccountId], references: [id])
+
+  @@index([glEntryId])
+  @@index([glAccountId])
+}
+
+// ---------------------------------------------------------------------------
+// Audit & regulatory
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  entityType String
+  entityId   String
+  action     AuditAction
+  actorId    String
+  actorRole  String
+  before     Json?
+  after      Json?
+  createdAt  DateTime    @default(now())
+
+  @@index([entityType, entityId, createdAt])
+}
+
+model RegulatoryParameter {
+  id            String    @id @default(uuid())
+  key           String
+  value         Json
+  currency      Currency?
+  effectiveFrom DateTime
+  effectiveTo   DateTime?
+  createdBy     String
+  createdAt     DateTime  @default(now())
+
+  @@index([key, effectiveFrom])
+}
+
+model AccountingPeriod {
+  id        String       @id @default(uuid())
+  period    String       @unique
+  status    PeriodStatus @default(OPEN)
+  closedBy  String?
+  closedAt  DateTime?
+  createdAt DateTime     @default(now())
+}
+
+model RegulatoryReturn {
+  id               String           @id @default(uuid())
+  period           String
+  type             String
+  generatedFileUrl String?
+  submissionStatus SubmissionStatus @default(NOT_GENERATED)
+  submittedBy      String?
+  submittedAt      DateTime?
+  createdAt        DateTime         @default(now())
+}
