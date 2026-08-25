@@ -20,3 +20,5 @@ supabase/.branches
 supabase/.temp
 
 .turbo/
+
+.vercel/
