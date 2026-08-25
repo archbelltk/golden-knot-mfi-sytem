@@ -100,16 +100,29 @@ demo accounts to poke around with:
 fly ssh console -C "pnpm --filter api exec prisma db seed"
 ```
 
+**Memory gotcha:** the seed command runs via `ts-node`, which loads the full
+TypeScript compiler in-process alongside the already-running NestJS server.
+On a `512mb` machine this leaves only a few MB free at idle, and `ts-node`
+hangs indefinitely (no error, no output, no crash — it just never proceeds
+past "Running seed command...") rather than failing loudly. `fly.toml`'s
+`[[vm]]` block is set to `1024mb` for this reason — don't drop it back to
+512 unless you also drop the seed step, since the API server alone runs fine
+in less. If you do need to change VM size afterward, use `fly scale memory`
+(and update `fly.toml` to match, or the next `fly deploy` will revert it).
+
 ## 4. Deploy the web app to Vercel
 
-```bash
-vercel link
-```
-
-In the Vercel dashboard for this project (**Settings → General**):
+Recommended: **connect the GitHub repo** in the Vercel dashboard
+(**Add New → Project → Import Git Repository**) rather than deploying via
+CLI. This gives automatic production deploys on push to `main` and preview
+deploys per branch/PR. Whichever way you deploy, the two project settings
+below are what actually make the monorepo build work — set them once in
+**Settings → General** and they apply regardless of how a deploy is
+triggered:
 
 - **Root Directory**: `apps/web`
-- **Build Command** (override): `pnpm --filter @golden-knot/shared build && pnpm build`
+- **Build Command** (override, in `apps/web/vercel.json`, already committed):
+  `pnpm --filter @golden-knot/shared build && pnpm build`
   (the default `next build` alone would skip building the `@golden-knot/shared`
   workspace package apps/web imports from)
 
@@ -118,7 +131,32 @@ want preview deploys to work too):
 
 - `API_URL` = `https://<your-fly-app>.fly.dev/api`
 
-Then deploy:
+**Two gotchas that cost real debugging time, in case they resurface:**
+
+1. **Root Directory must be set correctly *before* the project's first link,
+   or fixed via the API afterward** — `vercel link`/`vercel deploy` run from
+   inside `apps/web` makes Vercel treat that folder as the entire uploaded
+   source (Root Directory silently ends up `.`), so `packages/shared` never
+   uploads and the build fails with `ERR_PNPM_WORKSPACE_PKG_NOT_FOUND` and an
+   empty "Packages found in the workspace" list. If that happens, patch it
+   directly: `PATCH https://api.vercel.com/v9/projects/{projectId}` with
+   `{"rootDirectory":"apps/web"}` (bearer token from the Vercel CLI's own
+   `~/Library/Application Support/com.vercel.cli/auth.json` works), then
+   deploy again from the **repo root**, not from `apps/web`.
+2. **Never let a `pnpm-lock.yaml` or `pnpm-workspace.yaml` exist inside
+   `apps/web`** (or any other workspace member) — only the repo root should
+   have either file. A stray copy in `apps/web` makes pnpm treat it as its
+   own workspace root with zero members the moment the build's cwd starts
+   there (which is exactly what Vercel does with Root Directory set), and
+   `@golden-knot/shared` becomes unresolvable — same
+   `ERR_PNPM_WORKSPACE_PKG_NOT_FOUND` symptom as above, or an
+   `ERR_PNPM_OUTDATED_LOCKFILE` complaint about deps that are clearly already
+   in the root lockfile. Both files existed nested in `apps/web` from the
+   initial scaffold commit and were removed for this reason — if a tool or a
+   stray `pnpm install` run from inside `apps/web` regenerates one, delete it.
+
+If deploying via CLI instead of the Git integration, run it from the **repo
+root** (not `apps/web`) so the full monorepo uploads:
 
 ```bash
 vercel --prod
