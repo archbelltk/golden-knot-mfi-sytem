@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ShieldCheck } from "lucide-react";
 import { loginSchema, type LoginInput } from "@golden-knot/shared";
+import { PasswordInput } from "@/components/password-input";
 
 function goToNext(router: ReturnType<typeof useRouter>) {
   const next = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("next") : null;
@@ -135,8 +136,7 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-              <input
-                type="password"
+              <PasswordInput
                 {...register("password")}
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />

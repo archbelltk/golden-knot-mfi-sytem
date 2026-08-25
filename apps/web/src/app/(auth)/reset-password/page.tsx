@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { PasswordInput } from "@/components/password-input";
 
 const formSchema = z
   .object({
@@ -78,8 +79,7 @@ function ResetPasswordForm() {
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700">New password</label>
-              <input
-                type="password"
+              <PasswordInput
                 autoFocus
                 {...register("password")}
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -89,8 +89,7 @@ function ResetPasswordForm() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700">Confirm password</label>
-              <input
-                type="password"
+              <PasswordInput
                 {...register("confirmPassword")}
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />

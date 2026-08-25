@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createUserSchema, Role, type CreateUserInput } from "@golden-knot/shared";
 import { apiFetch, ClientApiError } from "@/lib/api";
 import { formatRole } from "@/lib/format";
+import { PasswordInput } from "@/components/password-input";
 
 const inputClass =
   "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary";
@@ -52,7 +53,7 @@ export function NewUserForm({ branches }: { branches: Branch[] }) {
       </div>
       <div>
         <label className="block text-sm font-medium text-slate-700">Temporary password</label>
-        <input type="password" className={inputClass} {...register("password")} />
+        <PasswordInput className={inputClass} {...register("password")} />
         {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
