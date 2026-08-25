@@ -1,4 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm --filter @golden-knot/shared build && pnpm build"
+  "buildCommand": "pnpm --filter @golden-knot/shared build && pnpm build",
+  "regions": ["fra1"]
 }

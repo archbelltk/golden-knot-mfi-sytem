@@ -20,8 +20,18 @@ vercel login
 
 No cloud project exists yet for this app (the local one is Docker-only). Create one:
 
-1. https://supabase.com/dashboard → **New project**. Pick a region close to your
-   users/Fly region (see step 3).
+1. https://supabase.com/dashboard → **New project**. Pick whichever region,
+   then set the Fly app's `primary_region` (step 3) to match it — **not** the
+   other way around, and not to whatever's closest to your users. Every
+   request does 2+ round trips to Postgres (an auth lookup, then the actual
+   query), and Postgres connection setup (SSL + SCRAM auth) multiplies raw
+   network RTT several times over — so a same-metro API↔DB hop matters far
+   more than the single user↔API hop. Getting this wrong cost ~2.5s per
+   request in production once: Fly in `jnb` (Johannesburg) talking to
+   Supabase in `eu-central-1` (Frankfurt) had a perfectly normal ~250ms raw
+   TCP RTT, but that turned into 900ms–2.2s per query once pgbouncer/Postgres
+   handshake overhead compounded it. Moving Fly to `fra` (same metro as the
+   DB) dropped that to single-digit ms.
 2. **Project Settings → Database** → copy the **connection string** twice:
    - the **Transaction pooler** (port `6543`) → this is `DATABASE_URL`
    - the **Direct connection** (port `5432`) → this is `DIRECT_URL`
