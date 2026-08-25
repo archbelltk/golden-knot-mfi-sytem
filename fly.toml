@@ -4,7 +4,7 @@
 #
 
 app = 'golden-knot-api'
-primary_region = 'jnb'
+primary_region = 'fra'
 
 [build]
 [deploy]
