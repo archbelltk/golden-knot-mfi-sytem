@@ -197,16 +197,18 @@ model Branch {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  passwordHash String
-  fullName     String
-  role         Role
-  branchId     String?
-  isActive     Boolean  @default(true)
-  mfaSecret    String?
-  mfaEnabled   Boolean  @default(false)
-  createdAt    DateTime @default(now())
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  passwordHash        String
+  fullName            String
+  role                Role
+  branchId            String?
+  isActive            Boolean   @default(true)
+  mfaSecret           String?
+  mfaEnabled          Boolean   @default(false)
+  resetTokenHash      String?
+  resetTokenExpiresAt DateTime?
+  createdAt           DateTime  @default(now())
 
   branch Branch? @relation(fields: [branchId], references: [id])
 }

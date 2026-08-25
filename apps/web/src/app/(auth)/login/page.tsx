@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -108,8 +110,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
       <div className="w-full max-w-sm bg-white rounded-lg shadow-sm border border-slate-200 p-8">
-        <h1 className="text-xl font-semibold text-slate-900">Golden Knot MFI</h1>
-        <p className="mt-1 text-sm text-slate-500">Sign in to the back office console</p>
+        <div className="flex flex-col items-center text-center">
+          <Image src="/gk-logo.png" alt="Golden Knot" width={1884} height={1558} className="h-28 w-auto" priority />
+        </div>
 
         {challengeToken ? (
           <MfaStep challengeToken={challengeToken} />
@@ -126,7 +129,12 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700">Password</label>
+              <div className="flex items-center justify-between">
+                <label className="block text-sm font-medium text-slate-700">Password</label>
+                <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
               <input
                 type="password"
                 {...register("password")}
@@ -147,7 +155,7 @@ export default function LoginPage() {
           </form>
         )}
 
-        <p className="mt-6 text-xs text-slate-400">
+        <p className="mt-6 text-center text-xs text-slate-400">
           Demo accounts: admin@demo.goldenknot.local / loanofficer@demo.goldenknot.local / etc, password ChangeMe123!
         </p>
       </div>

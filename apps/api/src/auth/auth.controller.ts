@@ -1,7 +1,9 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { loginSchema } from '@golden-knot/shared';
+import { loginSchema, forgotPasswordSchema, resetPasswordSchema } from '@golden-knot/shared';
 import type {
   LoginInput,
+  ForgotPasswordInput,
+  ResetPasswordInput,
   CurrentUser as CurrentUserType,
 } from '@golden-knot/shared';
 import { Public } from '../common/decorators/public.decorator';
@@ -31,5 +33,21 @@ export class AuthController {
   @Get('me')
   me(@CurrentUser() user: CurrentUserType) {
     return user;
+  }
+
+  @Public()
+  @Post('forgot-password')
+  forgotPassword(
+    @Body(new ZodValidationPipe(forgotPasswordSchema)) body: ForgotPasswordInput,
+  ) {
+    return this.authService.forgotPassword(body.email);
+  }
+
+  @Public()
+  @Post('reset-password')
+  resetPassword(
+    @Body(new ZodValidationPipe(resetPasswordSchema)) body: ResetPasswordInput,
+  ) {
+    return this.authService.resetPassword(body.token, body.password);
   }
 }

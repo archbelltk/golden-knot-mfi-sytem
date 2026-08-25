@@ -11,6 +11,9 @@ const figtree = Figtree({
 export const metadata: Metadata = {
   title: "Golden Knot MFI",
   description: "Golden Knot Financial Services — microfinance back office",
+  icons: {
+    icon: "/gk-favicon.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -4,7 +4,9 @@ Microfinance management system for Golden Knot Financial Services (Zimbabwe). Th
 Phase 1 build: client onboarding/KYC, loan product configuration, manual disbursement/collection,
 and a core double-entry ledger — see [`spec.md`](spec.md) for the full requirements,
 [`ROADMAP.md`](ROADMAP.md) for the delivery phases, [`PROGRESS.md`](PROGRESS.md) for current
-implementation status, and `/Users/macbook/.claude/plans/` for the build plan this scaffold followed.
+implementation status, [`FORGOT_PASSWORD.md`](FORGOT_PASSWORD.md) for how password reset currently
+works (dev-only link delivery, no email yet), and `/Users/macbook/.claude/plans/` for the build plan
+this scaffold followed.
 
 ## Stack
 

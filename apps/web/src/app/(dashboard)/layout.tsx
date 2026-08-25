@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   LayoutDashboard,
   Users,
@@ -112,14 +113,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <SidebarProvider>
       <div className="flex h-screen overflow-hidden bg-slate-50">
       <SidebarShell>
-        <div className="mb-6 flex items-center gap-2.5 px-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-            <Landmark size={18} className="text-white" />
-          </div>
-          <div className="leading-tight">
-            <p className="text-sm font-semibold text-slate-900">Golden Knot</p>
-            <p className="text-xs text-slate-400">MFI Back Office</p>
-          </div>
+        <div className="mb-6 border-b border-slate-100 px-2 pb-5">
+          <Image src="/gk-logo.png" alt="Golden Knot" width={1884} height={1558} className="h-20 w-auto" priority />
         </div>
 
         <nav className="flex-1 space-y-6 overflow-y-auto">
