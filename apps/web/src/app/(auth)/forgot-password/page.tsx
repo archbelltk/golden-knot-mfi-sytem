@@ -44,8 +44,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-sm bg-white rounded-lg shadow-sm border border-slate-200 p-8">
         <div className="flex flex-col items-center text-center">
           <Image src="/gk-logo.png" alt="Golden Knot" width={1884} height={1558} className="h-20 w-auto" priority />
-          <h1 className="mt-4 text-2xl font-semibold text-slate-900">Forgot password</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-4 text-sm text-slate-500">
             Enter your email and we&apos;ll generate a link to reset your password.
           </p>
         </div>
