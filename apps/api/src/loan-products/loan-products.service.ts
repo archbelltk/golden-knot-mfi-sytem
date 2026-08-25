@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,6 +9,7 @@ import {
   type CreateLoanProductInput,
   type CurrentUser,
   type LoanDisclosurePreviewInput,
+  type UpdateLoanProductInput,
 } from '@golden-knot/shared';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
@@ -75,9 +77,9 @@ export class LoanProductsService {
     });
   }
 
-  findAll() {
+  findAll(includeInactive = false) {
     return this.prisma.loanProduct.findMany({
-      where: { isActive: true },
+      where: includeInactive ? undefined : { isActive: true },
       orderBy: { name: 'asc' },
     });
   }
@@ -86,6 +88,90 @@ export class LoanProductsService {
     const product = await this.prisma.loanProduct.findUnique({ where: { id } });
     if (!product) throw new NotFoundException('Loan product not found');
     return product;
+  }
+
+  async update(id: string, input: UpdateLoanProductInput, actor: CurrentUser) {
+    const before = await this.findOne(id);
+
+    const currency = input.currency ?? before.currency;
+    const interestRate = input.interestRate ?? Number(before.interestRate);
+    if (input.interestRate !== undefined) {
+      const cap = await this.regulatoryParams.findCurrent(MAX_RATE_KEY, currency);
+      if (cap && typeof cap.value === 'number' && interestRate > cap.value) {
+        throw new BadRequestException(
+          `Interest rate ${interestRate} exceeds the configured RBZ cap of ${cap.value} for ${currency}`,
+        );
+      }
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const product = await tx.loanProduct.update({
+        where: { id },
+        data: {
+          name: input.name,
+          currency: input.currency,
+          interestType: input.interestType,
+          interestRate: input.interestRate,
+          feeSchedule: input.feeSchedule,
+          minTenorMonths: input.minTenorMonths,
+          maxTenorMonths: input.maxTenorMonths,
+          repaymentFrequency: input.repaymentFrequency,
+          gracePeriodDays: input.gracePeriodDays,
+          isActive: input.isActive,
+        },
+      });
+
+      await this.auditService.record(
+        {
+          entityType: 'LoanProduct',
+          entityId: product.id,
+          action: AuditAction.UPDATE,
+          actorId: actor.id,
+          actorRole: actor.role,
+          before,
+          after: product,
+        },
+        tx,
+      );
+
+      return product;
+    });
+  }
+
+  /**
+   * Only permitted when nothing has ever been written against this product —
+   * loan applications/accounts snapshot the product's terms onto themselves,
+   * so once either exists the product is load-bearing for real financial
+   * records and must be retired via `isActive`, never deleted.
+   */
+  async remove(id: string, actor: CurrentUser) {
+    const product = await this.findOne(id);
+
+    const [applicationCount, accountCount] = await Promise.all([
+      this.prisma.loanApplication.count({ where: { productId: id } }),
+      this.prisma.loanAccount.count({ where: { productId: id } }),
+    ]);
+    if (applicationCount > 0 || accountCount > 0) {
+      throw new ConflictException(
+        'This product has loan applications or accounts against it and cannot be deleted — deactivate it instead.',
+      );
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.loanProduct.delete({ where: { id } });
+
+      await this.auditService.record(
+        {
+          entityType: 'LoanProduct',
+          entityId: id,
+          action: AuditAction.DELETE,
+          actorId: actor.id,
+          actorRole: actor.role,
+          before: product,
+        },
+        tx,
+      );
+    });
   }
 
   /**

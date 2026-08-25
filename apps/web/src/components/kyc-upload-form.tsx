@@ -57,7 +57,7 @@ export function KycUploadForm({ clientId }: { clientId: string }) {
       <button
         onClick={onUpload}
         disabled={uploading}
-        className="flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+        className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
       >
         <Upload size={14} />
         {uploading ? "Uploading…" : "Upload"}

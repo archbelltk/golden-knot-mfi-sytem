@@ -14,7 +14,7 @@ import {
 import { apiFetch, ClientApiError } from "@/lib/api";
 
 const inputClass =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
 export default function NewLoanProductPage() {
   const router = useRouter();
@@ -70,7 +70,7 @@ export default function NewLoanProductPage() {
           {errors.code && <p className="mt-1 text-xs text-red-600">{errors.code.message}</p>}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-slate-700">Currency</label>
             <select className={inputClass} {...register("currency")}>
@@ -122,7 +122,7 @@ export default function NewLoanProductPage() {
 
         <fieldset className="border-t border-slate-200 pt-4">
           <legend className="text-sm font-semibold text-slate-900">Fee (optional, one line)</legend>
-          <div className="mt-3 grid grid-cols-3 gap-4">
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-600">Label</label>
               <input className={inputClass} value={feeLabel} onChange={(e) => setFeeLabel(e.target.value)} />
@@ -146,7 +146,7 @@ export default function NewLoanProductPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
         >
           {isSubmitting ? "Creating…" : "Create Product"}
         </button>

@@ -1,4 +1,5 @@
 import { ApiError, serverFetch } from "@/lib/server-fetch";
+import { formatDateTime } from "@/lib/format";
 import { ForbiddenNotice } from "@/components/forbidden-notice";
 
 interface AuditLogEntry {
@@ -40,7 +41,7 @@ export default async function AuditLogPage() {
           <tbody className="divide-y divide-slate-100">
             {logs.map((l) => (
               <tr key={l.id}>
-                <td className="px-4 py-3">{new Date(l.createdAt).toLocaleString()}</td>
+                <td className="px-4 py-3">{formatDateTime(l.createdAt)}</td>
                 <td className="px-4 py-3">
                   {l.entityType} <span className="text-slate-400">{l.entityId.slice(0, 8)}</span>
                 </td>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FileText } from "lucide-react";
 import { ApiError, serverFetch } from "@/lib/server-fetch";
+import { formatDate } from "@/lib/format";
 import { ForbiddenNotice } from "@/components/forbidden-notice";
 import { LoanDisburseForm } from "@/components/loan-disburse-form";
 import { LoanRepaymentForm } from "@/components/loan-repayment-form";
@@ -102,7 +103,7 @@ export default async function LoanAccountDetailPage({ params }: { params: Promis
               {account.scheduleLines.map((line) => (
                 <tr key={line.id}>
                   <td className="px-2 py-2">{line.installmentNumber}</td>
-                  <td className="px-2 py-2">{new Date(line.dueDate).toLocaleDateString()}</td>
+                  <td className="px-2 py-2">{formatDate(line.dueDate)}</td>
                   <td className="px-2 py-2">
                     {line.principalPaid}/{line.principalDue}
                   </td>

@@ -8,7 +8,7 @@ import { createRegulatoryParameterSchema, Currency, type CreateRegulatoryParamet
 import { apiFetch, ClientApiError } from "@/lib/api";
 
 const inputClass =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
 export function RegulatoryParamForm() {
   const router = useRouter();
@@ -44,7 +44,7 @@ export function RegulatoryParamForm() {
         This always inserts a new, effective-dated row — regulatory parameters are never overwritten,
         so the full history stays auditable.
       </p>
-      <div className="mt-3 grid grid-cols-4 gap-3">
+      <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div>
           <label className="block text-xs font-medium text-slate-600">Key</label>
           <input placeholder="MAX_INTEREST_RATE" className={inputClass} {...register("key")} />
@@ -74,7 +74,7 @@ export function RegulatoryParamForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-3 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+        className="mt-3 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
       >
         {isSubmitting ? "Recording…" : "Record Parameter"}
       </button>

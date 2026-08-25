@@ -159,7 +159,7 @@ export class LoanAccountsService {
 
       await this.ledgerPosting.post(tx, {
         reference: `DISB-${transaction.id}`,
-        description: `Disbursement of loan ${id}`,
+        description: `Disbursement of loan to ${account.client.firstName} ${account.client.lastName}`,
         period: periodOf(input.disbursementDate),
         transactionId: transaction.id,
         actor,
@@ -247,7 +247,7 @@ export class LoanAccountsService {
 
       await this.ledgerPosting.post(tx, {
         reference: `WO-${transaction.id}`,
-        description: `Write-off of loan ${id}`,
+        description: `Write-off of loan for ${account.client.firstName} ${account.client.lastName}`,
         period: periodOf(new Date()),
         transactionId: transaction.id,
         actor,

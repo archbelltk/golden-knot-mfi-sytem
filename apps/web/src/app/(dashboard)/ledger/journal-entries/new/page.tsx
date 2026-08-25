@@ -15,7 +15,7 @@ interface GLAccount {
 }
 
 const inputClass =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
 function currentPeriod() {
   const now = new Date();
@@ -73,7 +73,7 @@ export default function NewJournalEntryPage() {
           {errors.description && <p className="mt-1 text-xs text-red-600">{errors.description.message}</p>}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-slate-700">Period (YYYY-MM)</label>
             <input className={inputClass} {...register("period")} />
@@ -95,7 +95,7 @@ export default function NewJournalEntryPage() {
           <legend className="text-sm font-semibold text-slate-900">Lines</legend>
           <div className="mt-3 space-y-2">
             {fields.map((field, index) => (
-              <div key={field.id} className="grid grid-cols-[2fr_1fr_1fr_auto] gap-2 items-start">
+              <div key={field.id} className="grid grid-cols-2 gap-2 items-start sm:grid-cols-[2fr_1fr_1fr_auto]">
                 <select className={inputClass} {...register(`lines.${index}.glAccountId`)}>
                   <option value="">Account…</option>
                   {accounts.map((a) => (
@@ -132,7 +132,7 @@ export default function NewJournalEntryPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
         >
           {isSubmitting ? "Submitting…" : "Submit for Approval"}
         </button>

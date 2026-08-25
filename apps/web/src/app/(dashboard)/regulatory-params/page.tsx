@@ -1,4 +1,5 @@
 import { serverFetch } from "@/lib/server-fetch";
+import { formatDate, formatDateTime } from "@/lib/format";
 import { RegulatoryParamForm } from "@/components/regulatory-param-form";
 
 interface RegulatoryParameter {
@@ -42,8 +43,8 @@ export default async function RegulatoryParamsPage() {
                 <td className="px-4 py-3 font-mono">{p.key}</td>
                 <td className="px-4 py-3">{JSON.stringify(p.value)}</td>
                 <td className="px-4 py-3">{p.currency ?? "Any"}</td>
-                <td className="px-4 py-3">{new Date(p.effectiveFrom).toLocaleDateString()}</td>
-                <td className="px-4 py-3">{new Date(p.createdAt).toLocaleString()}</td>
+                <td className="px-4 py-3">{formatDate(p.effectiveFrom)}</td>
+                <td className="px-4 py-3">{formatDateTime(p.createdAt)}</td>
               </tr>
             ))}
             {params.length === 0 && (

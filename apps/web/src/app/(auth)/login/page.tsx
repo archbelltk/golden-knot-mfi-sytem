@@ -53,13 +53,13 @@ function MfaStep({ challengeToken }: { challengeToken: string }) {
         maxLength={6}
         value={code}
         onChange={(e) => setCode(e.target.value)}
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-slate-500"
+        className="w-full rounded-md border border-slate-300 px-3 py-2 text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-primary"
       />
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button
         type="submit"
         disabled={submitting || code.length !== 6}
-        className="w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+        className="w-full rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
       >
         {submitting ? "Verifying…" : "Verify"}
       </button>
@@ -120,7 +120,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 {...register("email")}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
+                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
               {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
             </div>
@@ -130,7 +130,7 @@ export default function LoginPage() {
               <input
                 type="password"
                 {...register("password")}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
+                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
               {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
             </div>
@@ -140,7 +140,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+              className="w-full rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
             >
               {isSubmitting ? "Signing in…" : "Sign in"}
             </button>

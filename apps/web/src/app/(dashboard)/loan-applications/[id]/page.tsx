@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ApiError, serverFetch } from "@/lib/server-fetch";
+import { formatDateTime } from "@/lib/format";
 import { ForbiddenNotice } from "@/components/forbidden-notice";
 import { LoanApplicationDecisionForm } from "@/components/loan-application-decision-form";
 import type { ApprovalLevel } from "@golden-knot/shared";
@@ -69,7 +70,7 @@ export default async function LoanApplicationDetailPage({ params }: { params: Pr
         <div className="mt-3 space-y-2">
           {application.approvals.map((a) => (
             <p key={a.id} className="text-sm text-slate-600">
-              {a.level}: {a.decision} — {new Date(a.decidedAt).toLocaleString()}
+              {a.level}: {a.decision} — {formatDateTime(a.decidedAt)}
               {a.comment ? ` — "${a.comment}"` : ""}
             </p>
           ))}

@@ -1,4 +1,5 @@
 import { serverFetch } from "@/lib/server-fetch";
+import { formatDateTime, formatPeriod } from "@/lib/format";
 import { PeriodActions } from "@/components/period-actions";
 
 interface AccountingPeriodRow {
@@ -52,7 +53,7 @@ export default async function AccountingPeriodsPage() {
           <tbody className="divide-y divide-slate-100">
             {rows.map((r) => (
               <tr key={r.period}>
-                <td className="px-4 py-3 font-mono">{r.period}</td>
+                <td className="px-4 py-3 font-mono">{formatPeriod(r.period)}</td>
                 <td className="px-4 py-3">
                   <span
                     className={`rounded-full px-2 py-1 text-xs font-medium ${
@@ -63,7 +64,7 @@ export default async function AccountingPeriodsPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-slate-500">
-                  {r.closedAt ? new Date(r.closedAt).toLocaleString() : "—"}
+                  {r.closedAt ? formatDateTime(r.closedAt) : "—"}
                 </td>
                 <td className="px-4 py-3">
                   <PeriodActions period={r.period} status={r.status} />

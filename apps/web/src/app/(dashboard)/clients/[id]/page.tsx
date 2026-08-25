@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ApiError, serverFetch } from "@/lib/server-fetch";
+import { formatDate } from "@/lib/format";
 import { ForbiddenNotice } from "@/components/forbidden-notice";
 import { ClientStatusActions } from "@/components/client-status-actions";
 import { ComplianceRecordForm } from "@/components/compliance-record-form";
@@ -51,7 +52,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         <ClientStatusActions clientId={client.id} status={client.status} />
       </div>
 
-      <section className="grid grid-cols-2 gap-6">
+      <section className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="rounded-lg border border-slate-200 bg-white p-4">
           <h2 className="text-sm font-semibold text-slate-900">Contact</h2>
           <p className="mt-2 text-sm text-slate-600">Phone: {client.phone}</p>
@@ -88,7 +89,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         </div>
         <Link
           href={`/loan-applications/new?clientId=${client.id}`}
-          className="mt-3 inline-block rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
+          className="mt-3 inline-block rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-dark"
         >
           New Loan Application
         </Link>
@@ -116,7 +117,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           {client.kycDocuments.map((d) => (
             <div key={d.id} className="flex items-center justify-between text-sm text-slate-600">
               <span>
-                {d.docType} — {d.verifiedStatus} — {new Date(d.uploadedAt).toLocaleDateString()}
+                {d.docType} — {d.verifiedStatus} — {formatDate(d.uploadedAt)}
               </span>
               {d.verifiedStatus === "PENDING" && <KycVerifyButtons clientId={client.id} documentId={d.id} />}
             </div>
@@ -133,7 +134,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         <div className="mt-3 space-y-1">
           {client.complianceRecords.map((r) => (
             <p key={r.id} className="text-sm text-slate-600">
-              {r.screeningType} — {r.result} — {new Date(r.reviewedAt).toLocaleDateString()}
+              {r.screeningType} — {r.result} — {formatDate(r.reviewedAt)}
               {r.notes ? ` — ${r.notes}` : ""}
             </p>
           ))}

@@ -29,7 +29,7 @@ export function PeriodActions({ period, status }: { period: string; status: "OPE
         <button
           onClick={() => act("close")}
           disabled={pending}
-          className="flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+          className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-dark disabled:opacity-50"
         >
           <Lock size={14} />
           Close period

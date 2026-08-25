@@ -9,7 +9,7 @@ import { complianceRecordSchema, ScreeningType, ScreeningResult, type Compliance
 import { apiFetch, ClientApiError } from "@/lib/api";
 
 const inputClass =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
 export function ComplianceRecordForm({ clientId }: { clientId: string }) {
   const router = useRouter();
@@ -67,7 +67,7 @@ export function ComplianceRecordForm({ clientId }: { clientId: string }) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+        className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
       >
         <ShieldCheck size={14} />
         Record

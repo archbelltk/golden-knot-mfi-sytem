@@ -29,7 +29,7 @@ interface DisclosurePreview {
 }
 
 const inputClass =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
 export default function NewLoanApplicationPage() {
   const router = useRouter();
@@ -145,7 +145,7 @@ export default function NewLoanApplicationPage() {
           )}
           {previewError && <p className="text-xs text-red-600">{previewError}</p>}
           {preview && (
-            <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm sm:grid-cols-4">
               <div>
                 <p className="text-xs text-slate-500">Total interest</p>
                 <p className="font-medium text-slate-900">
@@ -194,7 +194,7 @@ export default function NewLoanApplicationPage() {
         <button
           type="submit"
           disabled={isSubmitting || !preview}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
         >
           {isSubmitting ? "Submitting…" : "Submit Application"}
         </button>

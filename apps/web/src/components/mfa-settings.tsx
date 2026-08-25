@@ -6,7 +6,7 @@ import { ShieldCheck, ShieldOff } from "lucide-react";
 import { apiFetch, ClientApiError } from "@/lib/api";
 
 const inputClass =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-center tracking-widest focus:outline-none focus:ring-2 focus:ring-slate-500";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-center tracking-widest focus:outline-none focus:ring-2 focus:ring-primary";
 
 export function MfaSettings({ mfaEnabled }: { mfaEnabled: boolean }) {
   const router = useRouter();
@@ -97,7 +97,7 @@ export function MfaSettings({ mfaEnabled }: { mfaEnabled: boolean }) {
       {!setupData ? (
         <button
           onClick={beginSetup}
-          className="mt-3 flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          className="mt-3 flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary-dark"
         >
           <ShieldCheck size={14} />
           Set up two-factor authentication
@@ -122,7 +122,7 @@ export function MfaSettings({ mfaEnabled }: { mfaEnabled: boolean }) {
             <button
               onClick={enable}
               disabled={pending || code.length !== 6}
-              className="whitespace-nowrap rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+              className="whitespace-nowrap rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
             >
               Confirm
             </button>

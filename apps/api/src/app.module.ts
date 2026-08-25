@@ -17,6 +17,7 @@ import { KycModule } from './kyc/kyc.module';
 import { ComplianceModule } from './compliance/compliance.module';
 import { RegulatoryParamsModule } from './regulatory-params/regulatory-params.module';
 import { LoanProductsModule } from './loan-products/loan-products.module';
+import { ApprovalThresholdsModule } from './approval-thresholds/approval-thresholds.module';
 import { LedgerModule } from './ledger/ledger.module';
 import { LoanApplicationsModule } from './loan-applications/loan-applications.module';
 import { LoanAccountsModule } from './loan-accounts/loan-accounts.module';
@@ -43,6 +44,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     ComplianceModule,
     RegulatoryParamsModule,
     LoanProductsModule,
+    ApprovalThresholdsModule,
     LedgerModule,
     LoanApplicationsModule,
     LoanAccountsModule,

@@ -21,7 +21,7 @@ export default async function LoanApplicationsPage() {
         <h1 className="text-2xl font-semibold text-slate-900">Loan Applications</h1>
         <Link
           href="/loan-applications/new"
-          className="flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary-dark"
         >
           <PlusCircle size={16} />
           New Application

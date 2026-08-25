@@ -11,16 +11,34 @@ interface ClientRow {
   status: string;
 }
 
-export default async function ClientsPage() {
-  const clients = await serverFetch<ClientRow[]>("/clients");
+export default async function ClientsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const { status } = await searchParams;
+  const clients = await serverFetch<ClientRow[]>(
+    status ? `/clients?status=${encodeURIComponent(status)}` : "/clients",
+  );
 
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Clients</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-semibold text-slate-900">Clients</h1>
+          {status && (
+            <Link
+              href="/clients"
+              className="flex items-center gap-1.5 rounded-full bg-primary-light px-3 py-1 text-xs font-medium text-primary hover:bg-primary/20"
+            >
+              {status}
+              <span aria-hidden>×</span>
+            </Link>
+          )}
+        </div>
         <Link
           href="/clients/new"
-          className="flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary-dark"
         >
           <PlusCircle size={16} />
           New Client
@@ -59,7 +77,7 @@ export default async function ClientsPage() {
             {clients.length === 0 && (
               <tr>
                 <td colSpan={4} className="px-4 py-6 text-center text-slate-400">
-                  No clients yet.
+                  {status ? `No ${status.toLowerCase()} clients.` : "No clients yet."}
                 </td>
               </tr>
             )}

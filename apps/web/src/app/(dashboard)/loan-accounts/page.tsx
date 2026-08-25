@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { serverFetch } from "@/lib/server-fetch";
+import { LoanAccountStatusFilter } from "@/components/loan-account-status-filter";
 
 interface LoanAccountRow {
   id: string;
@@ -12,12 +13,22 @@ interface LoanAccountRow {
   product: { name: string };
 }
 
-export default async function LoanAccountsPage() {
-  const accounts = await serverFetch<LoanAccountRow[]>("/loan-accounts");
+export default async function LoanAccountsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const { status } = await searchParams;
+  const accounts = await serverFetch<LoanAccountRow[]>(
+    status ? `/loan-accounts?status=${encodeURIComponent(status)}` : "/loan-accounts",
+  );
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900">Loan Accounts</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-slate-900">Loan Accounts</h1>
+        <LoanAccountStatusFilter value={status} />
+      </div>
 
       <div className="mt-6 overflow-x-auto rounded-lg border border-slate-200 bg-white">
         <table className="min-w-full divide-y divide-slate-200 text-sm">
@@ -51,7 +62,7 @@ export default async function LoanAccountsPage() {
             {accounts.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
-                  No loan accounts yet.
+                  {status ? `No ${status.replace(/_/g, " ").toLowerCase()} loan accounts.` : "No loan accounts yet."}
                 </td>
               </tr>
             )}

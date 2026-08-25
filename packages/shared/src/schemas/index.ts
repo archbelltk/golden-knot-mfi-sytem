@@ -9,6 +9,7 @@ import {
   InterestType,
   KycDocType,
   RepaymentFrequency,
+  Role,
   ScreeningResult,
   ScreeningType,
 } from "../enums/index";
@@ -92,6 +93,16 @@ export const createLoanProductSchema = z.object({
 });
 export type CreateLoanProductInput = z.infer<typeof createLoanProductSchema>;
 
+// `code` is the immutable business key (referenced by seed data/reports); every
+// other config field is safe to edit in place because LoanAccount snapshots
+// currency/interestRate/interestType/tenor/etc. at application time, so edits
+// here only affect future applications, never disbursed loans.
+export const updateLoanProductSchema = createLoanProductSchema
+  .omit({ code: true })
+  .partial()
+  .extend({ isActive: z.boolean().optional() });
+export type UpdateLoanProductInput = z.infer<typeof updateLoanProductSchema>;
+
 export const createLoanApplicationSchema = z.object({
   clientId: z.string().uuid(),
   productId: z.string().uuid(),
@@ -171,6 +182,32 @@ export const createRegulatoryParameterSchema = z.object({
   effectiveTo: z.coerce.date().optional().nullable(),
 });
 export type CreateRegulatoryParameterInput = z.infer<typeof createRegulatoryParameterSchema>;
+
+export const createUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  fullName: z.string().min(1).max(150),
+  role: z.enum(enumValues(Role)),
+  branchId: z.string().uuid().optional().nullable(),
+});
+export type CreateUserInput = z.infer<typeof createUserSchema>;
+
+export const updateUserSchema = z.object({
+  fullName: z.string().min(1).max(150).optional(),
+  role: z.enum(enumValues(Role)).optional(),
+  branchId: z.string().uuid().optional().nullable(),
+  isActive: z.boolean().optional(),
+});
+export type UpdateUserInput = z.infer<typeof updateUserSchema>;
+
+export const createApprovalThresholdSchema = z.object({
+  productId: z.string().uuid().optional().nullable(),
+  currency: z.enum(enumValues(Currency)).optional().nullable(),
+  minAmount: moneyAmount,
+  maxAmount: z.coerce.number().positive().finite().optional().nullable(),
+  requiredLevel: z.enum(enumValues(ApprovalLevel)),
+});
+export type CreateApprovalThresholdInput = z.infer<typeof createApprovalThresholdSchema>;
 
 export const loginSchema = z.object({
   email: z.string().email(),

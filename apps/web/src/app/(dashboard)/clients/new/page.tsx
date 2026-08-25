@@ -31,7 +31,7 @@ function Field({
 }
 
 const inputClass =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
 export default function NewClientPage() {
   const router = useRouter();
@@ -69,7 +69,7 @@ export default function NewClientPage() {
       <h1 className="text-2xl font-semibold text-slate-900">New Client</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="First name" error={errors.firstName?.message}>
             <input className={inputClass} {...register("firstName")} />
           </Field>
@@ -102,7 +102,7 @@ export default function NewClientPage() {
 
         <fieldset className="border-t border-slate-200 pt-4">
           <legend className="text-sm font-semibold text-slate-900">Residential Address</legend>
-          <div className="mt-3 grid grid-cols-2 gap-4">
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Address line 1" error={errors.address?.line1?.message}>
               <input className={inputClass} {...register("address.line1")} />
             </Field>
@@ -117,7 +117,7 @@ export default function NewClientPage() {
 
         <fieldset className="border-t border-slate-200 pt-4">
           <legend className="text-sm font-semibold text-slate-900">Next of Kin</legend>
-          <div className="mt-3 grid grid-cols-2 gap-4">
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Full name" error={errors.nextOfKin?.fullName?.message}>
               <input className={inputClass} {...register("nextOfKin.fullName")} />
             </Field>
@@ -135,7 +135,7 @@ export default function NewClientPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
         >
           {isSubmitting ? "Creating…" : "Create Client"}
         </button>

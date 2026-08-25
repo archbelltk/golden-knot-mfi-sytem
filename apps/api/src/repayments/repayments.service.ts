@@ -183,7 +183,7 @@ export class RepaymentsService {
 
       await this.ledgerPosting.post(tx, {
         reference: `RPY-${transaction.id}`,
-        description: `Repayment on loan ${loanAccountId}`,
+        description: `Repayment from ${account.client.firstName} ${account.client.lastName}`,
         period: periodOf(input.paidAt),
         transactionId: transaction.id,
         actor,

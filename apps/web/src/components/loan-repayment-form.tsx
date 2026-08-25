@@ -8,7 +8,7 @@ import { recordRepaymentSchema, Channel, type RecordRepaymentInput } from "@gold
 import { apiFetch, ClientApiError } from "@/lib/api";
 
 const inputClass =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
 export function LoanRepaymentForm({ loanAccountId }: { loanAccountId: string }) {
   const router = useRouter();
@@ -40,7 +40,7 @@ export function LoanRepaymentForm({ loanAccountId }: { loanAccountId: string }) 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="rounded-lg border border-slate-200 bg-white p-4">
       <h2 className="text-sm font-semibold text-slate-900">Record Repayment</h2>
-      <div className="mt-3 grid grid-cols-4 gap-3">
+      <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div>
           <label className="block text-xs font-medium text-slate-600">Amount</label>
           <input type="number" step="0.01" className={inputClass} {...register("amount")} />
@@ -68,7 +68,7 @@ export function LoanRepaymentForm({ loanAccountId }: { loanAccountId: string }) 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-3 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+        className="mt-3 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
       >
         {isSubmitting ? "Recording…" : "Record Repayment"}
       </button>

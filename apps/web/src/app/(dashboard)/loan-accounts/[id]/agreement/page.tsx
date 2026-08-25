@@ -1,4 +1,5 @@
 import { ApiError, serverFetch } from "@/lib/server-fetch";
+import { formatDate } from "@/lib/format";
 import { ForbiddenNotice } from "@/components/forbidden-notice";
 import { PrintButton } from "@/components/print-button";
 
@@ -61,9 +62,9 @@ export default async function LoanAgreementPage({ params }: { params: Promise<{ 
 
       <div className="rounded-lg border border-slate-200 bg-white p-8 print:border-none print:p-0">
         <h2 className="text-lg font-semibold text-slate-900">Golden Knot Financial Services</h2>
-        <p className="text-sm text-slate-500">Loan Agreement — {account.product.name}</p>
+        <p className="text-sm text-slate-500">Loan Agreement: {account.product.name}</p>
 
-        <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+        <dl className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
           <div>
             <dt className="text-slate-500">Borrower</dt>
             <dd className="font-medium text-slate-900">
@@ -94,14 +95,14 @@ export default async function LoanAgreementPage({ params }: { params: Promise<{ 
           <div>
             <dt className="text-slate-500">Disbursement date</dt>
             <dd className="font-medium text-slate-900">
-              {account.disbursementDate ? new Date(account.disbursementDate).toLocaleDateString() : "Not yet disbursed"}
+              {account.disbursementDate ? formatDate(account.disbursementDate) : "Not yet disbursed"}
             </dd>
           </div>
         </dl>
 
         <div className="mt-6 rounded-md bg-slate-50 p-4">
           <h3 className="text-sm font-semibold text-slate-900">Mandatory Disclosure — Total Cost of Credit</h3>
-          <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-4">
+          <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-4">
             <div>
               <dt className="text-slate-500">Principal</dt>
               <dd className="font-medium text-slate-900">{totalPrincipal.toFixed(2)}</dd>
@@ -122,6 +123,7 @@ export default async function LoanAgreementPage({ params }: { params: Promise<{ 
         </div>
 
         <h3 className="mt-6 text-sm font-semibold text-slate-900">Repayment Schedule</h3>
+        <div className="overflow-x-auto">
         <table className="mt-2 w-full text-sm">
           <thead className="text-left text-xs uppercase text-slate-500">
             <tr>
@@ -137,7 +139,7 @@ export default async function LoanAgreementPage({ params }: { params: Promise<{ 
             {account.scheduleLines.map((line) => (
               <tr key={line.id}>
                 <td className="py-1">{line.installmentNumber}</td>
-                <td className="py-1">{new Date(line.dueDate).toLocaleDateString()}</td>
+                <td className="py-1">{formatDate(line.dueDate)}</td>
                 <td className="py-1 text-right">{Number(line.principalDue).toFixed(2)}</td>
                 <td className="py-1 text-right">{Number(line.interestDue).toFixed(2)}</td>
                 <td className="py-1 text-right">{Number(line.feesDue).toFixed(2)}</td>
@@ -148,6 +150,7 @@ export default async function LoanAgreementPage({ params }: { params: Promise<{ 
             ))}
           </tbody>
         </table>
+        </div>
 
         <p className="mt-8 text-xs text-slate-500">
           This disclosure was acknowledged by the client at the time of application, prior to
